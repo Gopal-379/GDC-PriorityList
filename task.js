@@ -39,6 +39,9 @@ const cli = () => {
             const task = parts.join("");
             addTask(priority, task);
             break;
+        case "help":
+            console.log(usage);
+            break;
     }
 
 };
