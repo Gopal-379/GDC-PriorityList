@@ -55,26 +55,26 @@ const listTasks = () => {
 };
 
 const deleteTask = (idx) => {
-    if (!fs.existsSync(taskFile)) {
-        console.log("Error: Missing NUMBER for deleting tasks.");
-        return;
-    }
+  if (!fs.existsSync(taskFile)) {
+    console.log("Error: Missing NUMBER for deleting tasks.");
+    return;
+  }
 
-    const tasks = fs.readFileSync(taskFile, 'utf8').trim().split('\n');
+  const tasks = fs.readFileSync(taskFile, "utf8").trim().split("\n");
 
-    if (idx < 1 || idx > tasks.length) {
-        console.log(
-          `Error: task with index #${idx} does not exist. Nothing deleted.`
-        );
-        return;
-    }
+  if (idx < 1 || idx > tasks.length) {
+    console.log(
+      `Error: task with index #${idx} does not exist. Nothing deleted.`
+    );
+    return;
+  }
 
-    const deletedTask = tasks.splice(idx - 1, 1);
-    fs.writeFileSync(taskFile, tasks.join('\n'), 'utf8');
+  const deletedTask = tasks.splice(idx - 1, 1)[0];
+  fs.writeFileSync(taskFile, tasks.join("\n") + "\n");
 
-    console.log(`Deleted task #${idx}`);
-    console.log(deleteTask);
-}
+  console.log(`Deleted task #${idx}`);
+  console.log(deletedTask);
+};
 
 const cli = () => {
   const args = process.argv.slice(2);
