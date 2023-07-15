@@ -60,7 +60,7 @@ const deleteTask = (idx) => {
     return;
   }
 
-  const tasks = fs.readFileSync(taskFile, "utf8").trim().split("\n");
+  let tasks = fs.readFileSync(taskFile, "utf8").trim().split("\n");
 
   if (idx < 1 || idx > tasks.length) {
     console.log(
@@ -69,11 +69,60 @@ const deleteTask = (idx) => {
     return;
   }
 
+  tasks = tasks
+    .map((line) => line.split(" "))
+    .map(([priority, ...parts]) => ({
+      priority: parseInt(priority),
+      task: parts.join(" "),
+    }))
+    .sort((a, b) => a.priority - b.priority);
+
   const deletedTask = tasks.splice(idx - 1, 1)[0];
-  fs.writeFileSync(taskFile, tasks.join("\n") + "\n");
+  fs.writeFileSync(
+    taskFile,
+    tasks.map((task) => `${task.priority} ${task.task}`).join("\n") + "\n"
+  );
 
   console.log(`Deleted task #${idx}`);
-  console.log(deletedTask);
+  //console.log(deletedTask);
+};
+
+const markTaskAsDone = (idx) => {
+  if (!fs.existsSync(taskFile)) {
+    console.log("There are no pending tasks!");
+    return;
+  }
+
+  let tasks = fs.readFileSync(taskFile, "utf8").trim().split("\n");
+
+  if (isNaN(idx)) {
+    console.log("Error: Missing NUMBER for marking tasks as done.");
+    return;
+  }
+
+  tasks = tasks
+    .map((line) => line.split(" "))
+    .map(([priority, ...parts]) => ({
+      priority: parseInt(priority),
+      task: parts.join(" "),
+    }))
+    .sort((a, b) => a.priority - b.priority);
+
+  if (idx < 1 || idx > tasks.length) {
+    console.log(`Error: no incomplete item with index #${idx} exists.`);
+    return;
+  }
+
+  const task = tasks.splice(idx - 1, 1)[0].task;
+
+  fs.writeFileSync(
+    taskFile,
+    tasks.map((task) => `${task.priority} ${task.task}`).join("\n") + "\n"
+  );
+
+  fs.appendFileSync(completedFile, task + "\n");
+
+  console.log("Marked item as done.");
 };
 
 const cli = () => {
@@ -83,7 +132,9 @@ const cli = () => {
     console.log(usage);
     return;
   }
+
   const [cmd, ...cmdArgs] = args;
+
   switch (cmd) {
     case "add":
       const [priority, ...parts] = cmdArgs;
@@ -99,6 +150,10 @@ const cli = () => {
     case "del":
       const index = parseInt(cmdArgs[0]);
       deleteTask(index);
+      break;
+    case "done":
+      const dindex = parseInt(cmdArgs[0]);
+      markTaskAsDone(dindex);
       break;
   }
 };
