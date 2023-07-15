@@ -40,8 +40,14 @@ const listTasks = () => {
       priority: parseInt(priority),
       task: parts.join(" "),
     }))
+    .filter(({ priority }) => !isNaN(priority))
     .sort((a, b) => a.priority - b.priority);
-    
+
+    if (tasks.length === 0) {
+      console.log("There are no pending tasks!");
+      return;
+    }
+
     tasks.forEach((task, idx) => {
         const taskLine = `${idx + 1}. ${task.task} [${task.priority}]`;
         console.log(taskLine);
@@ -59,7 +65,7 @@ const cli = () => {
   switch (cmd) {
     case "add":
       const [priority, ...parts] = cmdArgs;
-      const task = parts.join("");
+      const task = parts.join(" ");
       addTask(priority, task);
       break;
     case "help":
