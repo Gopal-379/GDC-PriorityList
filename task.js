@@ -43,10 +43,10 @@ const listTasks = () => {
     .filter(({ priority }) => !isNaN(priority))
     .sort((a, b) => a.priority - b.priority);
 
-  if (tasks.length === 0) {
-    console.log("There are no pending tasks!");
-    return;
-  }
+//   if (tasks.length === 0) {
+//     console.log("There are no pending tasks!");
+//     return;
+//   }
 
   tasks.forEach((task, idx) => {
     const taskLine = `${idx + 1}. ${task.task} [${task.priority}]`;
@@ -125,6 +125,45 @@ const markTaskAsDone = (idx) => {
   console.log("Marked item as done.");
 };
 
+const reportTask = () => {
+  const pendingTasksCount = fs.existsSync(taskFile)
+    ? fs
+        .readFileSync(taskFile, "utf8")
+        .trim()
+        .split("\n")
+        .filter((line) => line.trim() !== "").length
+    : 0;
+
+  const completedTasksCount = fs.existsSync(completedFile)
+    ? fs
+        .readFileSync(completedFile, "utf8")
+        .trim()
+        .split("\n")
+        .filter((line) => line.trim() !== "").length
+    : 0;
+
+  console.log(`Pending : ${pendingTasksCount}`);
+
+  if (pendingTasksCount > 0) {
+    listTasks();
+  }
+
+  console.log("");
+
+  console.log(`Completed : ${completedTasksCount}`);
+
+  if (completedTasksCount > 0) {
+    const completedTasks = fs
+      .readFileSync(completedFile, "utf8")
+      .trim()
+      .split("\n")
+      .filter((line) => line.trim() !== "");
+    completedTasks.forEach((task, index) => {
+      console.log(`${index + 1}. ${task}`);
+    });
+  }
+};
+
 const cli = () => {
   const args = process.argv.slice(2);
 
@@ -154,6 +193,9 @@ const cli = () => {
     case "done":
       const dindex = parseInt(cmdArgs[0]);
       markTaskAsDone(dindex);
+      break;
+    case "report":
+      reportTask();
       break;
   }
 };
