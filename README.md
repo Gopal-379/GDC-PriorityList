@@ -34,7 +34,6 @@ $ ./task ls
 1. change light bulb [2]
 2. water the plants [5]
 ```
-
 index starts from 1, this is used to identify a particular task to complete or delete it.
 
 ### 3. Add a new item
