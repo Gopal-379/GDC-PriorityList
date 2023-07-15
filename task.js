@@ -102,11 +102,11 @@ const markTaskAsDone = (idx) => {
 
   tasks = tasks
     .map((line) => line.split(" "))
-    .map(([priority, ...parts]) => ({
-      priority: parseInt(priority),
+    .map(([pri, ...parts]) => ({
+      pri: parseInt(pri),
       task: parts.join(" "),
     }))
-    .sort((a, b) => a.priority - b.priority);
+    .sort((a, b) => a.pri - b.pri);
 
   if (idx < 1 || idx > tasks.length) {
     console.log(`Error: no incomplete item with index #${idx} exists.`);
@@ -117,7 +117,7 @@ const markTaskAsDone = (idx) => {
 
   fs.writeFileSync(
     taskFile,
-    tasks.map((task) => `${task.priority} ${task.task}`).join("\n") + "\n"
+    tasks.map((task) => `${task.pri} ${task.task}`).join("\n") + "\n"
   );
 
   fs.appendFileSync(completedFile, task + "\n");
