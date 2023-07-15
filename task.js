@@ -43,16 +43,38 @@ const listTasks = () => {
     .filter(({ priority }) => !isNaN(priority))
     .sort((a, b) => a.priority - b.priority);
 
-    if (tasks.length === 0) {
-      console.log("There are no pending tasks!");
-      return;
+  if (tasks.length === 0) {
+    console.log("There are no pending tasks!");
+    return;
+  }
+
+  tasks.forEach((task, idx) => {
+    const taskLine = `${idx + 1}. ${task.task} [${task.priority}]`;
+    console.log(taskLine);
+  });
+};
+
+const deleteTask = (idx) => {
+    if (!fs.existsSync(taskFile)) {
+        console.log("Error: Missing NUMBER for deleting tasks.");
+        return;
     }
 
-    tasks.forEach((task, idx) => {
-        const taskLine = `${idx + 1}. ${task.task} [${task.priority}]`;
-        console.log(taskLine);
-    });
-};
+    const tasks = fs.readFileSync(taskFile, 'utf8').trim().split('\n');
+
+    if (idx < 1 || idx > tasks.length) {
+        console.log(
+          `Error: task with index #${idx} does not exist. Nothing deleted.`
+        );
+        return;
+    }
+
+    const deletedTask = tasks.splice(idx - 1, 1);
+    fs.writeFileSync(taskFile, tasks.join('\n'), 'utf8');
+
+    console.log(`Deleted task #${idx}`);
+    console.log(deleteTask);
+}
 
 const cli = () => {
   const args = process.argv.slice(2);
@@ -73,6 +95,10 @@ const cli = () => {
       break;
     case "ls":
       listTasks();
+      break;
+    case "del":
+      const index = parseInt(cmdArgs[0]);
+      deleteTask(index);
       break;
   }
 };
